@@ -33,36 +33,40 @@ export default function HeroSections({
   return (
     <div className="w-full">
       {/* Hero Section - Light by default, Dark in dark mode */}
-      <section className="bg-white dark:bg-black text-gray-800 dark:text-white py-20 px-4 sm:px-6 lg:px-8 relative rounded-lg">
-        <div className="max-w-4xl mx-auto">
+      <section className="bg-white dark:bg-black text-gray-800 dark:text-white py-20 relative rounded-lg">
+        <div className="mx-auto">
           <div className="space-y-8">
             <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{hero.badge}</span>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight max-w-3xl">
               {hero.title}
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
               {hero.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link 
-                href={hero.primaryButton.href} 
+              <a 
+                href={"http://reblog.so"}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-6 py-3 border border-gray-800 dark:border-white text-base font-medium rounded-md text-white dark:text-black bg-gray-800 dark:bg-white hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
               >
                 {hero.primaryButton.text}
-              </Link>
-              <Link 
-                href={hero.secondaryButton.href} 
+              </a>
+              <a 
+                href="http://reblog.so"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 dark:border-gray-700 text-base font-medium rounded-md text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
               >
                 {hero.secondaryButton.text}
-              </Link>
+              </a>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section - Light by default, Dark in dark mode */}
-      <section className="py-20 mt-4 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-white rounded-lg">
+      {/* <section className="py-20 mt-4 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-white rounded-lg">
         <div className="max-w-4xl mx-auto">
           <div className="mb-16">
             <h2 className="text-3xl font-bold mb-4">{features.title}</h2>
@@ -87,7 +91,7 @@ export default function HeroSections({
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 } 
