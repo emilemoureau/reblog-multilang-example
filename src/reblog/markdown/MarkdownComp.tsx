@@ -3,7 +3,7 @@
 import Markdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import Link from 'next/link';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 
 export const generateSlug = (str: string | undefined): string => {
@@ -70,29 +70,47 @@ const TweetEmbed = ({ id }: TweetEmbedProps) => {
   const tweetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Clean up any existing Twitter widgets
-    type WindowWithTwitter = Window & typeof globalThis & { 
-      twttr?: { 
-        widgets: { 
-          load: (element: HTMLElement | null) => void 
-        } 
-      } 
-    };
+    // Only load Twitter widgets when the component is visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Clean up any existing Twitter widgets
+          type WindowWithTwitter = Window & typeof globalThis & { 
+            twttr?: { 
+              widgets: { 
+                load: (element: HTMLElement | null) => void 
+              } 
+            } 
+          };
 
-    if ((window as WindowWithTwitter).twttr) {
-      // Load the Twitter widget script
-      (window as WindowWithTwitter).twttr?.widgets.load(tweetRef.current);
-    } else {
-      // Load the Twitter widget script if it doesn't exist
-      const script = document.createElement('script');
-      script.setAttribute('src', 'https://platform.twitter.com/widgets.js');
-      script.setAttribute('charset', 'utf-8');
-      script.setAttribute('async', 'true');
-      script.onload = () => {
-        (window as WindowWithTwitter).twttr?.widgets.load(tweetRef.current);
-      };
-      document.head.appendChild(script);
+          if ((window as WindowWithTwitter).twttr) {
+            // Load the Twitter widget script
+            (window as WindowWithTwitter).twttr?.widgets.load(tweetRef.current);
+          } else {
+            // Load the Twitter widget script if it doesn't exist
+            const script = document.createElement('script');
+            script.setAttribute('src', 'https://platform.twitter.com/widgets.js');
+            script.setAttribute('charset', 'utf-8');
+            script.setAttribute('async', 'true');
+            script.onload = () => {
+              (window as WindowWithTwitter).twttr?.widgets.load(tweetRef.current);
+            };
+            document.head.appendChild(script);
+          }
+          
+          // Disconnect observer once loaded
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    if (tweetRef.current) {
+      observer.observe(tweetRef.current);
     }
+
+    return () => {
+      observer.disconnect();
+    };
   }, [id]);
 
   return (
@@ -110,18 +128,54 @@ interface YoutubeEmbedProps {
 }
 
 const YoutubeEmbed = ({ id, title }: YoutubeEmbedProps) => {
+  const iframeRef = useRef<HTMLDivElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setShouldLoad(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+    
+    if (iframeRef.current) {
+      observer.observe(iframeRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="youtube-embed-container">
-      <iframe 
-        width="100%" 
-        height="315" 
-        src={`https://www.youtube.com/embed/${id}`}
-        title={title || "YouTube video player"}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerPolicy="strict-origin-when-cross-origin"
-        allowFullScreen
-      />
+    <div ref={iframeRef} className="youtube-embed-container">
+      {shouldLoad ? (
+        <iframe 
+          loading="lazy"
+          width="100%" 
+          height="315" 
+          src={`https://www.youtube.com/embed/${id}`}
+          title={title || "YouTube video player"}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        />
+      ) : (
+        <div 
+          style={{ 
+            width: '100%', 
+            height: '315px', 
+            backgroundColor: '#f0f0f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          Loading YouTube video...
+        </div>
+      )}
     </div>
   );
 };
