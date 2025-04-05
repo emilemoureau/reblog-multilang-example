@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 interface Feature {
   title: string;
   description: string;
@@ -27,8 +25,8 @@ interface HeroSectionsProps {
 }
 
 export default function HeroSections({ 
-  hero, 
-  features 
+  hero,
+  features
 }: HeroSectionsProps) {
   return (
     <div className="w-full">
@@ -66,7 +64,7 @@ export default function HeroSections({
       </section>
 
       {/* Features Section - Light by default, Dark in dark mode */}
-      {/* <section className="py-20 mt-4 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-white rounded-lg">
+      <section className="py-20 mt-4 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-white rounded-lg">
         <div className="max-w-4xl mx-auto">
           <div className="mb-16">
             <h2 className="text-3xl font-bold mb-4">{features.title}</h2>
@@ -91,7 +89,7 @@ export default function HeroSections({
             ))}
           </div>
         </div>
-      </section> */}
+      </section>
     </div>
   );
 } 

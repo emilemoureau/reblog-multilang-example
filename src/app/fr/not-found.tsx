@@ -10,14 +10,14 @@ export default function NotFound() {
         Page Non Trouvée
       </h2>
       <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-md">
-        Désolé, nous n'avons pas pu trouver la page que vous cherchez. Elle a peut-être été déplacée ou supprimée.
+        Désolé, nous n&apos;avons pas pu trouver la page que vous cherchez. Elle a peut-être été déplacée ou supprimée.
       </p>
       <div className="mt-8">
         <Link
           href="/fr"
           className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
         >
-          Retour à l'Accueil
+          Retour à l&apos;Accueil
         </Link>
       </div>
     </div>
