@@ -2,9 +2,12 @@
 
 import Markdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
 import Link from 'next/link';
 import { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 export const generateSlug = (str: string | undefined): string => {
   if (!str) return '';
@@ -24,6 +27,24 @@ export const generateSlug = (str: string | undefined): string => {
     .replace(/-+/g, '-');
 
   return str;
+};
+
+// Helper function to detect if content is a markdown table
+export const isMarkdownTable = (content: string): boolean => {
+  const lines = content.trim().split('\n');
+  
+  // A basic markdown table needs at least 2 lines (header and separator)
+  if (lines.length < 2) return false;
+  
+  // Check if all lines have pipe characters
+  const allLinesHavePipes = lines.every(line => line.includes('|'));
+  if (!allLinesHavePipes) return false;
+  
+  // Check if the second line is a separator line (contains only |, -, :, or spaces)
+  const separatorLineRegex = /^\s*[\|\-:\s]+\s*$/;
+  const hasSeparatorLine = separatorLineRegex.test(lines[1]);
+  
+  return hasSeparatorLine;
 };
 
 interface CustomImgProps {
@@ -234,9 +255,14 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
     // Process youtube tags
     .replace(/<youtube id="(.*?)"(?: title="(.*?)")?.*?\/>/g, '<div data-youtube-id="$1" data-youtube-title="$2" class="youtube-embed"></div>')
     // Handle youtube tags with closing tags
-    .replace(/<youtube id="(.*?)"(?: title="(.*?)")?.*?>(.*?)<\/youtube>/g, '<div data-youtube-id="$1" data-youtube-title="$2" class="youtube-embed">$3</div>');
+    .replace(/<youtube id="(.*?)"(?: title="(.*?)")?.*?>(.*?)<\/youtube>/g, '<div data-youtube-id="$1" data-youtube-title="$2" class="youtube-embed">$3</div>')
+    // Process ==highlight== syntax to convert to custom highlight spans
+    .replace(/==([^=]+?)==/g, '<span class="highlighted">$1</span>');
 
   const MarkdownComponents: MarkdownCustomComponents = {
+    blockquote: ({ children, ...props }: MarkdownComponentProps) => {
+      return <blockquote className="markdown-blockquote" {...props}>{children}</blockquote>;
+    },
     h2: ({ children, ...props }: HeadingElementProps) => {
       // Increment the heading count
       headingCountRef.current += 1;
@@ -380,12 +406,72 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
     youtube: ({ id, title }: MarkdownComponentProps) => {
       if (typeof id !== 'string') return null;
       return <YoutubeEmbed id={id} title={title as string | undefined} />;
+    },
+    table: ({ children, ...props }: MarkdownComponentProps) => {
+      return <div><table {...props}>{children}</table></div>;
+    },
+    thead: ({ children, ...props }: MarkdownComponentProps) => {
+      return <thead {...props}>{children}</thead>;
+    },
+    tbody: ({ children, ...props }: MarkdownComponentProps) => {
+      return <tbody {...props}>{children}</tbody>;
+    },
+    tr: ({ children, ...props }: MarkdownComponentProps) => {
+      return <tr {...props}>{children}</tr>;
+    },
+    th: ({ children, ...props }: MarkdownComponentProps) => {
+      return <th {...props}>{children}</th>;
+    },
+    td: ({ children, ...props }: MarkdownComponentProps) => {
+      return <td {...props}>{children}</td>;
+    },
+    p: ({ children, ...props }: MarkdownComponentProps) => {
+      return (
+        <p {...props}>
+          {children}
+        </p>
+      );
+    },
+    span: ({ className, children, ...props }: MarkdownComponentProps) => {
+      if (className === 'highlighted') {
+        return <span className="highlighted-text" {...props}>{children}</span>;
+      }
+      return <span className={className} {...props}>{children}</span>;
+    },
+    code: ({ inline, className, children, ...props }: MarkdownComponentProps) => {
+      const match = /language-(\w+)/.exec(className || '');
+      const language = match ? match[1] : '';
+      
+      const content = String(children);
+      
+      // Check if the content is actually a markdown table
+      // This prevents tables from being rendered as code blocks
+      if (!inline && isMarkdownTable(content)) {
+        return <div>{content}</div>;
+      }
+      
+      // For regular code blocks
+      return !inline ? (
+        <SyntaxHighlighter
+          style={vscDarkPlus}
+          language={language || 'text'}
+          PreTag="div"
+          {...props}
+        >
+          {content.replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
     }
   };
 
   return (
     <Markdown
       rehypePlugins={[rehypeRaw]}
+      remarkPlugins={[remarkGfm]}
       components={MarkdownComponents}
     >
       {processedContent}

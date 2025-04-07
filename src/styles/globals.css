@@ -6,6 +6,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --highlight-bg: #ffffaa;
+  --highlight-text: #000000;
 }
 
 @theme inline {
@@ -19,6 +21,8 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --highlight-bg: #555500;
+    --highlight-text: #ffffff;
   }
 }
 
