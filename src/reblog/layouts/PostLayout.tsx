@@ -6,7 +6,7 @@ import BreadcrumbV2 from '../components/BreadcrumbV2'
 /* import { BlogSEO } from '../components/SEO' */
 import ScrollTopAndComment from '../components/ScrollTopAndComment'
 import SocialShare from '../components/SocialShare'
-import { MarkdownComp } from '../markdown/MarkdownComp'
+import { MarkdownParser } from '../markdown/MarkdownParser'
 import TableOfContents from '@/components/TableOfContents'
 import LanguageNotification from '../components/LanguageNotification'
 
@@ -169,7 +169,7 @@ function PostLayout({
             </div>
             <div className="divide-y divide-gray-200 dark:divide-gray-700 xl:col-span-3 xl:row-span-2 xl:pb-0">
               <div className="prose max-w-none pb-8 dark:prose-dark cs-article-content">
-                <MarkdownComp
+                <MarkdownParser
                   content={content}
                 />
               </div>

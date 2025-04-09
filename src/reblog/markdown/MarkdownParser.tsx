@@ -201,11 +201,11 @@ const YoutubeEmbed = ({ id, title }: YoutubeEmbedProps) => {
   );
 };
 
-interface MarkdownCompProps {
+interface MarkdownParserProps {
   content?: string;
 }
 
-interface MarkdownComponentProps {
+interface MarkdownParseronentProps {
   children?: React.ReactNode;
   href?: string;
   src?: string;
@@ -231,16 +231,16 @@ interface ReactElement {
   };
 }
 
-interface HeadingElementProps extends MarkdownComponentProps {
+interface HeadingElementProps extends MarkdownParseronentProps {
   children?: React.ReactNode;
 }
 
 // Define a type for Markdown component props to avoid using 'any'
 type MarkdownCustomComponents = {
-  [key: string]: React.ComponentType<MarkdownComponentProps>;
+  [key: string]: React.ComponentType<MarkdownParseronentProps>;
 }
 
-const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
+const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
   const headingCountRef = useRef(-2);
 
   // Process the content to handle custom tags
@@ -259,8 +259,8 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
     // Process ==highlight== syntax to convert to custom highlight spans
     .replace(/==([^=]+?)==/g, '<span class="highlighted">$1</span>');
 
-  const MarkdownComponents: MarkdownCustomComponents = {
-    blockquote: ({ children, ...props }: MarkdownComponentProps) => {
+  const MarkdownParseronents: MarkdownCustomComponents = {
+    blockquote: ({ children, ...props }: MarkdownParseronentProps) => {
       return <blockquote className="markdown-blockquote" {...props}>{children}</blockquote>;
     },
     h2: ({ children, ...props }: HeadingElementProps) => {
@@ -318,7 +318,7 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
         </h3>
       );
     },
-    img: ({ src, alt }: MarkdownComponentProps) => {
+    img: ({ src, alt }: MarkdownParseronentProps) => {
       if (!src) return null;
       const imgProps: CustomImgProps = {
         src,
@@ -326,7 +326,7 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
       };
       return <CustomImg {...imgProps} />;
     },
-    a: ({ href, children }: MarkdownComponentProps) => {
+    a: ({ href, children }: MarkdownParseronentProps) => {
       if (!href) return <span>{children}</span>;
       
       const isInternalLink = href.startsWith('');
@@ -363,10 +363,10 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
         </a>
       );
     },
-    buttonexternalv1: ({ url, button_title }: MarkdownComponentProps) => {
+    buttonexternalv1: ({ url, button_title }: MarkdownParseronentProps) => {
       return <ButtonExternalV1 url={url || ''} button_title={button_title} />;
     },
-    div: ({ className, children, ...props }: MarkdownComponentProps) => {
+    div: ({ className, children, ...props }: MarkdownParseronentProps) => {
       // Handle tweet embeds
       if (className === 'tweet-embed' && props['data-tweet-id']) {
         return <TweetEmbed id={props['data-tweet-id'] as string} />;
@@ -383,11 +383,11 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
       // Default div rendering
       return <div className={className} {...props}>{children}</div>;
     },
-    tweet: ({ id }: MarkdownComponentProps) => {
+    tweet: ({ id }: MarkdownParseronentProps) => {
       if (typeof id !== 'string') return null;
       return <TweetEmbed id={id} />;
     },
-    iframe: ({ src, width, height, title }: MarkdownComponentProps) => {
+    iframe: ({ src, width, height, title }: MarkdownParseronentProps) => {
       if (!src) return null;
       return (
         <div className="iframe-container">
@@ -403,42 +403,42 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
         </div>
       );
     },
-    youtube: ({ id, title }: MarkdownComponentProps) => {
+    youtube: ({ id, title }: MarkdownParseronentProps) => {
       if (typeof id !== 'string') return null;
       return <YoutubeEmbed id={id} title={title as string | undefined} />;
     },
-    table: ({ children, ...props }: MarkdownComponentProps) => {
+    table: ({ children, ...props }: MarkdownParseronentProps) => {
       return <div><table {...props}>{children}</table></div>;
     },
-    thead: ({ children, ...props }: MarkdownComponentProps) => {
+    thead: ({ children, ...props }: MarkdownParseronentProps) => {
       return <thead {...props}>{children}</thead>;
     },
-    tbody: ({ children, ...props }: MarkdownComponentProps) => {
+    tbody: ({ children, ...props }: MarkdownParseronentProps) => {
       return <tbody {...props}>{children}</tbody>;
     },
-    tr: ({ children, ...props }: MarkdownComponentProps) => {
+    tr: ({ children, ...props }: MarkdownParseronentProps) => {
       return <tr {...props}>{children}</tr>;
     },
-    th: ({ children, ...props }: MarkdownComponentProps) => {
+    th: ({ children, ...props }: MarkdownParseronentProps) => {
       return <th {...props}>{children}</th>;
     },
-    td: ({ children, ...props }: MarkdownComponentProps) => {
+    td: ({ children, ...props }: MarkdownParseronentProps) => {
       return <td {...props}>{children}</td>;
     },
-    p: ({ children, ...props }: MarkdownComponentProps) => {
+    p: ({ children, ...props }: MarkdownParseronentProps) => {
       return (
         <p {...props}>
           {children}
         </p>
       );
     },
-    span: ({ className, children, ...props }: MarkdownComponentProps) => {
+    span: ({ className, children, ...props }: MarkdownParseronentProps) => {
       if (className === 'highlighted') {
         return <span className="highlighted-text" {...props}>{children}</span>;
       }
       return <span className={className} {...props}>{children}</span>;
     },
-    code: ({ inline, className, children, ...props }: MarkdownComponentProps) => {
+    code: ({ inline, className, children, ...props }: MarkdownParseronentProps) => {
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : '';
       
@@ -472,11 +472,11 @@ const MarkdownComp = ({ content = "" }: MarkdownCompProps) => {
     <Markdown
       rehypePlugins={[rehypeRaw]}
       remarkPlugins={[remarkGfm]}
-      components={MarkdownComponents}
+      components={MarkdownParseronents}
     >
       {processedContent}
     </Markdown>
   );
 };
 
-export { MarkdownComp };
+export { MarkdownParser };
