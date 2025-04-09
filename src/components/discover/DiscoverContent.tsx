@@ -8,6 +8,7 @@ interface DiscoverContentProps {
   activeCategory: string;
   currentPage: number;
   hasMore?: boolean;
+  lang?: string;
   children: React.ReactNode;
 }
 
@@ -15,7 +16,8 @@ export default function DiscoverContent({
   activeCategory, 
   currentPage, 
   hasMore = false,
-  children 
+  lang,
+  children
 }: DiscoverContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -27,7 +29,11 @@ export default function DiscoverContent({
     params.set('page', '1'); // Reset to page 1 when changing category
     
     // Navigate to the new URL
-    router.push(`/discover?${params.toString()}`);
+    if (lang && lang !== 'en') {
+      router.push(`/${lang}/discover?${params.toString()}`);
+    } else {
+      router.push(`/discover?${params.toString()}`);
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -36,7 +42,11 @@ export default function DiscoverContent({
     params.set('page', page.toString());
     
     // Navigate to the new URL
-    router.push(`/discover?${params.toString()}`);
+    if (lang && lang !== 'en') {
+      router.push(`/${lang}/discover?${params.toString()}`);
+    } else {
+      router.push(`/discover?${params.toString()}`);
+    }
   };
 
   return (

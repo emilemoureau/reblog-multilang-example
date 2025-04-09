@@ -14,6 +14,8 @@ type DiscoverPageProps = {
   searchParams: Promise<Record<string, string | string[]>>;
 };
 
+const lang = 'fr';
+
 export default async function DiscoverPage({
   searchParams,
 }: DiscoverPageProps) {
@@ -55,9 +57,10 @@ export default async function DiscoverPage({
         activeCategory={category}
         currentPage={currentPage}
         hasMore={hasMore}
+        lang={lang}
       >
         <ArticleList
-          lang="fr"
+          lang={lang}
           articles={articlesResponse}
           title={categoryTitles[category as keyof typeof categoryTitles] || "Tout le Contenu"}
           categoryPath={category}
