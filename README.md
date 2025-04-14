@@ -14,6 +14,32 @@ Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_mediu
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/emilemoureau/reblog-multilang-example&project-name=reblog-multilang-example&repository-name=reblog-multilang-example)
 
+## Installation
+
+1. Add reblog in tsconfig : "@/reblog/*": ["./src/reblog/*"]
+2. yarn add remark-gfm rehype-raw react-markdown react-share remark remark-html react-syntax-highlighter
+3. Add styles in layout
+- import "@/reblog/styles/article.css";
+4. Add app/sitemap.xml/route.ts -> If necessary, you can customize the sitemap route to avoid conflicts with the classic sitemap (app/sitemap-articles.xml/routes.tx)
+5. Add uploadcare to the Nextjs image provider
+
+```javascript
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ucarecdn.com',
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+```
+
 ## Configuration
 
 ### Reblog
