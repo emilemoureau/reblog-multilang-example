@@ -1,4 +1,4 @@
-import ArticleList from '@/components/articles/ArticleList';
+import ArticleList from '@/reblog/components/articles/ArticleList';
 import HeroSections from '@/components/landing/HeroSections';
 import { getArticlesList } from '@/reblog/services/articles';
 

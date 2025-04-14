@@ -7,7 +7,7 @@ import BreadcrumbV2 from '../components/BreadcrumbV2'
 import ScrollTopAndComment from '../components/ScrollTopAndComment'
 import SocialShare from '../components/SocialShare'
 import { MarkdownParser } from '../markdown/MarkdownParser'
-import TableOfContents from '@/components/TableOfContents'
+import TableOfContents from '../components/TableOfContents'
 import LanguageNotification from '../components/LanguageNotification'
 
 const postDateTemplate: Intl.DateTimeFormatOptions = {

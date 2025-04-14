@@ -1,4 +1,4 @@
-import { CategoryPage } from '@/modules/categoryPage';
+import { CategoryPage } from '@/reblog/modules/categoryPage';
 import { generateSimpleMetadata } from '@/reblog/utils/generateMetadata';
 
 export const metadata = generateSimpleMetadata(

@@ -1,5 +1,5 @@
-import ArticleList from '@/components/articles/ArticleList';
-import DiscoverContent from '@/components/discover/DiscoverContent';
+import ArticleList from '@/reblog/components/articles/ArticleList';
+import DiscoverContent from '@/reblog/components/discover/DiscoverContent';
 import { getArticlesList } from '@/reblog/services/articles';
 
 export const metadata = {

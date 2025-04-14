@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import PostLayout from '../../../../reblog/layouts/PostLayout';
+import PostLayout from '@/reblog/layouts/PostLayout';
 import { getArticleDetails } from '@/reblog/services/articles';
 import { generateArticleMetadata } from '@/reblog/utils/generateMetadata';
 

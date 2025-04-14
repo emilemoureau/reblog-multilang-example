@@ -1,5 +1,5 @@
-import ArticleCard from '@/components/articles/ArticleCard';
-import ArticlePagination from '@/components/articles/ArticlePagination';
+import ArticleCard from '@/reblog/components/articles/ArticleCard';
+import ArticlePagination from '@/reblog/components/articles/ArticlePagination';
 import { Article } from '@/reblog/services/articles';
 
 interface ArticleListProps {

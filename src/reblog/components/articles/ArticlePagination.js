@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import Pagination from '@/components/shared/Pagination';
+import Pagination from '@/reblog/components/shared/Pagination';
 
 export default function ArticlePagination({ currentPage, hasMore, categoryPath }) {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import ArticleList from '@/components/articles/ArticleList';
+import ArticleList from '@/reblog/components/articles/ArticleList';
 import { Article as ReblogArticle } from '@/reblog/services/articles';
 
 // Constants for pagination
