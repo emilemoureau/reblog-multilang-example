@@ -16,12 +16,13 @@ Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_mediu
 
 ## Installation
 
-1. Add reblog in tsconfig : "@/reblog/*": ["./src/reblog/*"]
-2. yarn add remark-gfm rehype-raw react-markdown react-share remark remark-html react-syntax-highlighter
-3. Add styles in layout
+1. Copy / paste the src/reblog folder
+2. Add reblog in tsconfig : "@/reblog/*": ["./src/reblog/*"]
+3. yarn add remark-gfm rehype-raw react-markdown react-share remark remark-html react-syntax-highlighter
+4. Add styles in layout
 - import "@/reblog/styles/article.css";
-4. Add app/sitemap.xml/route.ts -> If necessary, you can customize the sitemap route to avoid conflicts with the classic sitemap (app/sitemap-articles.xml/routes.tx)
-5. Add uploadcare to the Nextjs image provider
+5. Add app/sitemap.xml/route.ts -> If necessary, you can customize the sitemap route to avoid conflicts with the classic sitemap (app/sitemap-articles.xml/routes.tx)
+6. Add uploadcare to the Nextjs image provider
 
 ```javascript
 import type { NextConfig } from "next";
