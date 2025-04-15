@@ -335,7 +335,7 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
 
       if (isInternalLink) {
         return (
-          <Link href={href} prefetch={false} legacyBehavior>
+          <Link href={href} prefetch={false}>
             <a>{children}</a>
           </Link>
         );
@@ -346,7 +346,6 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
           <Link
             href={href.replace(process.env.WEBSITE_URL, '')}
             prefetch={false}
-            legacyBehavior
           >
             <a>{children}</a>
           </Link>

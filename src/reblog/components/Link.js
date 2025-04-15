@@ -7,7 +7,7 @@ const CustomLink = ({ href, ...rest }) => {
 
   if (isInternalLink) {
     return (
-      <Link legacyBehavior href={href} prefetch={false}>
+      <Link href={href} prefetch={false}>
         <a {...rest} />
       </Link>
     )
@@ -15,7 +15,7 @@ const CustomLink = ({ href, ...rest }) => {
 
   if (isInternalLink_v2) {
     return (
-      <Link legacyBehavior href={href.replace(process.env.WEBSITE_URL, '/')} prefetch={false}>
+      <Link href={href.replace(process.env.WEBSITE_URL, '/')} prefetch={false}>
         <a {...rest} />
       </Link>
     )

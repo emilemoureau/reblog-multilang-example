@@ -16,7 +16,7 @@ const BreadcrumbV2 = ({
                   {element.sep && (
                     <span className="mx-2 text-gray-400">/</span>
                   )}
-                  <Link legacyBehavior href={element.link} prefetch={false}>
+                  <Link href={element.link} prefetch={false}>
                     <a className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                       {element.title}
                     </a>
