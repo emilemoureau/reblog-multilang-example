@@ -47,7 +47,7 @@ export default nextConfig;
 REBLOG_PRIVATE_API_KEY=REBLOG_PRIVATE_API_KEY
 WEBSITE_URL=example.com
 ```
-8. Add <HtmlLangSetter /> in your src/app/layout.tsx file to adjust the lang= property in the html tag.
+8. Add <HtmlLangSetter /> in your src/app/layout.tsx file to adjust the lang= property in the html tag
 
 ## Configuration
 
