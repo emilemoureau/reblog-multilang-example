@@ -14,7 +14,7 @@ Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_mediu
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/emilemoureau/reblog-multilang-example&project-name=reblog-multilang-example&repository-name=reblog-multilang-example)
 
-## Installation
+## Installation in an existing Next.js project
 
 1. Copy / paste the src/reblog folder
 2. Add reblog in tsconfig : "@/reblog/*": ["./src/reblog/*"]
@@ -40,6 +40,14 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 ```
+
+7. Create a `.env` file in the root directory and add the following variables:
+
+```
+REBLOG_PRIVATE_API_KEY=REBLOG_PRIVATE_API_KEY
+WEBSITE_URL=example.com
+```
+8. 
 
 ## Configuration
 

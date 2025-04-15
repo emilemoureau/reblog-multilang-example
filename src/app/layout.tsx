@@ -45,12 +45,11 @@ export default async function RootLayout({
       <head>
         <meta name="locale" content={lang} />
         <meta name="twitter:site" content="@reblogdemo" />
+        <HtmlLangSetter />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950`}
       >
-        <HtmlLangSetter />
-
         <header className="py-6">
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
