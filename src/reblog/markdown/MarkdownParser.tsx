@@ -52,12 +52,12 @@ const CustomImg = ({ ...rest }: CustomImgProps) => {
   // Create a more robust URL encoding that specifically handles spaces and special characters
   const sanitizeUrl = (url: string): string => {
     // First replace spaces with %20
-    let sanitized = url.replace(/ /g, '%20');
+    const sanitized = url.replace(/ /g, '%20');
     // Then ensure the URL is properly encoded for other special characters
     try {
       // Use URL constructor to validate and normalize the URL
       return new URL(sanitized).toString();
-    } catch (e) {
+    } catch {
       // If URL constructor fails (invalid URL), fallback to manual encoding
       return encodeURI(sanitized);
     }
@@ -256,9 +256,9 @@ const processMarkdownInHTML = (content: string): string => {
   // This looks for divs with content that might contain markdown images
   const htmlWithMarkdownRegex = /<div([^>]*)>([\s\S]*?)<\/div>/g;
 
-  return content.replace(htmlWithMarkdownRegex, (match, attributes, innerContent) => {
+  return content.replace(htmlWithMarkdownRegex, (match: string, attributes: string, innerContent: string) => {
     // Process markdown image syntax inside HTML
-    const processedInnerContent = innerContent.replace(/!\[(.*?)\]\((.*?)\)/g, (imgMatch, alt, src) => {
+    const processedInnerContent = innerContent.replace(/!\[(.*?)\]\((.*?)\)/g, (imgMatch: string, alt: string, src: string) => {
       // Encode the URL to handle spaces and special characters
       const encodedSrc = src.replace(/ /g, '%20');
       // Return the image with proper HTML format
@@ -279,7 +279,7 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
   // Fix markdown image links directly in the content (before further processing)
   const fixedImagesContent = htmlProcessedContent.replace(
     /!\[(.*?)\]\((.*?)\)/g, 
-    (match, alt, src) => {
+    (match: string, alt: string, src: string) => {
       // Encode the URL to handle spaces and special characters
       const encodedSrc = src.replace(/ /g, '%20');
       return `![${alt}](${encodedSrc})`;
