@@ -11,39 +11,32 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 export const generateSlug = (str: string | undefined): string => {
   if (!str) return '';
-  
-  str = str.replace(/^\s+|\s+$/g, '');
-  str = str.toLowerCase();
-  const from = 'àáãäâèéëêìíïîòóöôùúüûñç·/_,:;';
-  const to = 'aaaaaeeeeiiiioooouuuunc------';
 
-  for (let i = 0, l = from.length; i < l; i++) {
-    str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
-  }
-
-  str = str
-    .replace(/[^a-z0-9 -]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-
-  return str;
+  return str
+    .normalize('NFD') // decompose accents
+    .replace(/[\u0300-\u036f]/g, '') // remove diacritics
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // remove invalid chars
+    .replace(/\s+/g, '-') // collapse whitespace and replace with -
+    .replace(/-+/g, '-'); // collapse multiple -
 };
 
 // Helper function to detect if content is a markdown table
 export const isMarkdownTable = (content: string): boolean => {
   const lines = content.trim().split('\n');
-  
+
   // A basic markdown table needs at least 2 lines (header and separator)
   if (lines.length < 2) return false;
-  
+
   // Check if all lines have pipe characters
   const allLinesHavePipes = lines.every(line => line.includes('|'));
   if (!allLinesHavePipes) return false;
-  
+
   // Check if the second line is a separator line (contains only |, -, :, or spaces)
   const separatorLineRegex = /^\s*[\|\-:\s]+\s*$/;
   const hasSeparatorLine = separatorLineRegex.test(lines[1]);
-  
+
   return hasSeparatorLine;
 };
 
@@ -55,9 +48,26 @@ interface CustomImgProps {
 
 const CustomImg = ({ ...rest }: CustomImgProps) => {
   if (!rest.src) return null;
+  
+  // Create a more robust URL encoding that specifically handles spaces and special characters
+  const sanitizeUrl = (url: string): string => {
+    // First replace spaces with %20
+    let sanitized = url.replace(/ /g, '%20');
+    // Then ensure the URL is properly encoded for other special characters
+    try {
+      // Use URL constructor to validate and normalize the URL
+      return new URL(sanitized).toString();
+    } catch (e) {
+      // If URL constructor fails (invalid URL), fallback to manual encoding
+      return encodeURI(sanitized);
+    }
+  };
+  
+  const encodedSrc = sanitizeUrl(rest.src);
+  
   return (
     <Image
-      src={rest.src}
+      src={encodedSrc}
       alt={rest.alt || ''}
       width={800}
       height={400}
@@ -96,12 +106,12 @@ const TweetEmbed = ({ id }: TweetEmbedProps) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           // Clean up any existing Twitter widgets
-          type WindowWithTwitter = Window & typeof globalThis & { 
-            twttr?: { 
-              widgets: { 
-                load: (element: HTMLElement | null) => void 
-              } 
-            } 
+          type WindowWithTwitter = Window & typeof globalThis & {
+            twttr?: {
+              widgets: {
+                load: (element: HTMLElement | null) => void
+              }
+            }
           };
 
           if ((window as WindowWithTwitter).twttr) {
@@ -118,13 +128,13 @@ const TweetEmbed = ({ id }: TweetEmbedProps) => {
             };
             document.head.appendChild(script);
           }
-          
+
           // Disconnect observer once loaded
           observer.disconnect();
         }
       });
     }, { threshold: 0.1 });
-    
+
     if (tweetRef.current) {
       observer.observe(tweetRef.current);
     }
@@ -159,7 +169,7 @@ const YoutubeEmbed = ({ id, title }: YoutubeEmbedProps) => {
         observer.disconnect();
       }
     }, { threshold: 0.1 });
-    
+
     if (iframeRef.current) {
       observer.observe(iframeRef.current);
     }
@@ -172,10 +182,10 @@ const YoutubeEmbed = ({ id, title }: YoutubeEmbedProps) => {
   return (
     <div ref={iframeRef} className="youtube-embed-container">
       {shouldLoad ? (
-        <iframe 
+        <iframe
           loading="lazy"
-          width="100%" 
-          height="315" 
+          width="100%"
+          height="315"
           src={`https://www.youtube.com/embed/${id}`}
           title={title || "YouTube video player"}
           frameBorder="0"
@@ -184,10 +194,10 @@ const YoutubeEmbed = ({ id, title }: YoutubeEmbedProps) => {
           allowFullScreen
         />
       ) : (
-        <div 
-          style={{ 
-            width: '100%', 
-            height: '315px', 
+        <div
+          style={{
+            width: '100%',
+            height: '315px',
             backgroundColor: '#f0f0f0',
             display: 'flex',
             alignItems: 'center',
@@ -240,14 +250,45 @@ type MarkdownCustomComponents = {
   [key: string]: React.ComponentType<MarkdownParseronentProps>;
 }
 
+// Helper function to process markdown inside HTML elements
+const processMarkdownInHTML = (content: string): string => {
+  // Regex to find HTML tags with markdown content inside
+  // This looks for divs with content that might contain markdown images
+  const htmlWithMarkdownRegex = /<div([^>]*)>([\s\S]*?)<\/div>/g;
+
+  return content.replace(htmlWithMarkdownRegex, (match, attributes, innerContent) => {
+    // Process markdown image syntax inside HTML
+    const processedInnerContent = innerContent.replace(/!\[(.*?)\]\((.*?)\)/g, (imgMatch, alt, src) => {
+      // Encode the URL to handle spaces and special characters
+      const encodedSrc = src.replace(/ /g, '%20');
+      // Return the image with proper HTML format
+      return `<img src="${encodedSrc}" alt="${alt || ''}" />`;
+    });
+
+    // Return the div with processed content
+    return `<div${attributes}>${processedInnerContent}</div>`;
+  });
+};
+
 const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
   const headingCountRef = useRef(-2);
 
-  // Process the content to handle custom tags
-  const processedContent = content
+  // First process markdown inside HTML elements
+  const htmlProcessedContent = processMarkdownInHTML(content);
+
+  // Fix markdown image links directly in the content (before further processing)
+  const fixedImagesContent = htmlProcessedContent.replace(
+    /!\[(.*?)\]\((.*?)\)/g, 
+    (match, alt, src) => {
+      // Encode the URL to handle spaces and special characters
+      const encodedSrc = src.replace(/ /g, '%20');
+      return `![${alt}](${encodedSrc})`;
+    }
+  );
+
+  // Then process the content to handle custom tags
+  const processedContent = fixedImagesContent
     .replace(/<div \/>/g, "")
-    .replace(/<strong>/g, "**")
-    .replace(/<\/strong>/g, "**")
     // Process tweet tags to avoid parsing issues
     .replace(/<tweet id="(.*?)".*?\/>/g, '<div data-tweet-id="$1" class="tweet-embed"></div>')
     // Handle tweet tags with closing tags
@@ -328,7 +369,7 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
     },
     a: ({ href, children }: MarkdownParseronentProps) => {
       if (!href) return <span>{children}</span>;
-      
+
       const isInternalLink = href.startsWith('');
       const isInternalLink_v2 = href.includes(process.env.WEBSITE_URL || '');
       const isAnchorLink = href.startsWith('#');
@@ -336,7 +377,7 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
       if (isInternalLink) {
         return (
           <Link href={href} prefetch={false}>
-            <a>{children}</a>
+            {children}
           </Link>
         );
       }
@@ -370,15 +411,15 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
       if (className === 'tweet-embed' && props['data-tweet-id']) {
         return <TweetEmbed id={props['data-tweet-id'] as string} />;
       }
-      
+
       // Handle YouTube embeds
       if (className === 'youtube-embed' && props['data-youtube-id']) {
-        return <YoutubeEmbed 
-          id={props['data-youtube-id'] as string} 
-          title={props['data-youtube-title'] as string | undefined} 
+        return <YoutubeEmbed
+          id={props['data-youtube-id'] as string}
+          title={props['data-youtube-title'] as string | undefined}
         />;
       }
-      
+
       // Default div rendering
       return <div className={className} {...props}>{children}</div>;
     },
@@ -440,15 +481,15 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
     code: ({ inline, className, children, ...props }: MarkdownParseronentProps) => {
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : '';
-      
+
       const content = String(children);
-      
+
       // Check if the content is actually a markdown table
       // This prevents tables from being rendered as code blocks
       if (!inline && isMarkdownTable(content)) {
         return <div>{content}</div>;
       }
-      
+
       // For regular code blocks
       return !inline ? (
         <SyntaxHighlighter

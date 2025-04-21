@@ -7,17 +7,13 @@ const CustomLink = ({ href, ...rest }) => {
 
   if (isInternalLink) {
     return (
-      <Link href={href} prefetch={false}>
-        <a {...rest} />
-      </Link>
+      <Link href={href} prefetch={false} {...rest} />
     )
   }
 
   if (isInternalLink_v2) {
     return (
-      <Link href={href.replace(process.env.WEBSITE_URL, '/')} prefetch={false}>
-        <a {...rest} />
-      </Link>
+      <Link href={href.replace(process.env.WEBSITE_URL, '/')} prefetch={false} {...rest} />
     )
   }
 

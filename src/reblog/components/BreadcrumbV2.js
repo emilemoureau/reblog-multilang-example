@@ -9,17 +9,15 @@ const BreadcrumbV2 = ({
         {
           items_breadcrumb.map((element, index) => {
             if (!element) return;
-            
+
             if (element.link) {
               return (
                 <li key={`breadcrumb-item-${index}`} className="flex items-center">
                   {element.sep && (
                     <span className="mx-2 text-gray-400">/</span>
                   )}
-                  <Link href={element.link} prefetch={false}>
-                    <a className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                      {element.title}
-                    </a>
+                  <Link href={element.link} prefetch={false} className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                    {element.title}
                   </Link>
                 </li>
               )

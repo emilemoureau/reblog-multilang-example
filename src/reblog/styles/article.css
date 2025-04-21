@@ -1,8 +1,8 @@
 .cs-article-content {
   /* Typography */
-  h2 { font-size: 2rem; font-weight: 700; margin-top: 16px; margin-bottom: 16px;}
-  h3 { font-size: 1.5rem; font-weight: 700; margin-top: 16px; margin-bottom: 16px;}
-  h4 { font-size: 1.25rem; font-weight: 700; margin-top: 16px; margin-bottom: 16px;}
+  h2 { font-size: 2rem; font-weight: 700; margin-top: 16px; margin-bottom: 16px; line-height: 35px;}
+  h3 { font-size: 1.5rem; font-weight: 700; margin-top: 16px; margin-bottom: 16px; line-height: 32px;}
+  h4 { font-size: 1.25rem; font-weight: 700; margin-top: 16px; margin-bottom: 16px; line-height: 29px;}
 
   h2 > a, h3 > a, h4 > a {
     text-decoration: none;
@@ -76,6 +76,20 @@
     margin: 20px 0 25px 15px;
     border-left: 2px solid #3184ff;
     padding-left: 15px;
+  }
+
+  .column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .column.column-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .column.column-4 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 
