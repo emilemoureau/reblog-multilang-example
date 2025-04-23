@@ -9,6 +9,19 @@ import Image from 'next/image';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
+// Define the type for the TikTok embed object
+interface TikTokEmbedObject {
+  reloadEmbeds?: () => void;
+  // Add other methods/properties if needed
+}
+
+// Augment the global Window interface
+declare global {
+  interface Window {
+    tiktokEmbed?: TikTokEmbedObject;
+  }
+}
+
 export const generateSlug = (str: string | undefined): string => {
   if (!str) return '';
 
@@ -235,7 +248,6 @@ const TikTokEmbed = ({ id, username }: TikTokEmbedProps) => {
           } else {
             // If script already exists, try to force reload of widgets
             if (window.hasOwnProperty('tiktokEmbed')) {
-              // @ts-ignore - TikTok embed object
               window.tiktokEmbed?.reloadEmbeds?.();
             }
           }

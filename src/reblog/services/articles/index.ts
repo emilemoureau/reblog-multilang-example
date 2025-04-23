@@ -40,6 +40,8 @@ export interface ArticleDetails {
   alt_langs?: Array<{
     lang: string;
     handle: string;
+    status: string;
+    main: boolean;
   }>;
 }
 
