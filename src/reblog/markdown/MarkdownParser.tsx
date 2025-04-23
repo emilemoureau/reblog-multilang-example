@@ -211,6 +211,73 @@ const YoutubeEmbed = ({ id, title }: YoutubeEmbedProps) => {
   );
 };
 
+interface TikTokEmbedProps {
+  id: string;
+  username?: string;
+}
+
+const TikTokEmbed = ({ id, username }: TikTokEmbedProps) => {
+  const tikTokRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Only load TikTok widgets when the component is visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Load the TikTok widget script if it doesn't exist
+          const existingScript = document.querySelector('script[src="https://www.tiktok.com/embed.js"]');
+          
+          if (!existingScript) {
+            const script = document.createElement('script');
+            script.setAttribute('src', 'https://www.tiktok.com/embed.js');
+            script.setAttribute('async', 'true');
+            document.head.appendChild(script);
+          } else {
+            // If script already exists, try to force reload of widgets
+            if (window.hasOwnProperty('tiktokEmbed')) {
+              // @ts-ignore - TikTok embed object
+              window.tiktokEmbed?.reloadEmbeds?.();
+            }
+          }
+          
+          // Disconnect observer once loaded
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.1 });
+
+    if (tikTokRef.current) {
+      observer.observe(tikTokRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [id, username]);
+
+  return (
+    <div ref={tikTokRef} className="tiktok-embed-container">
+      {username ? (
+        <blockquote 
+          className="tiktok-embed" 
+          cite={`https://www.tiktok.com/@${username}/video/${id}`}
+          data-video-id={id} 
+          style={{ maxWidth: '605px', minWidth: '325px' }}>
+          <section>
+            <a target="_blank" title={`@${username}`} href={`https://www.tiktok.com/@${username}?refer=embed`}>@{username}</a>
+          </section>
+        </blockquote>
+      ) : (
+        <iframe 
+          src={`https://www.tiktok.com/embed/v3/${id}`} 
+          style={{ width: '100%', height: '600px', border: 'none' }}
+          allowFullScreen
+        />
+      )}
+    </div>
+  );
+};
+
 interface MarkdownParserProps {
   content?: string;
 }
@@ -228,6 +295,8 @@ interface MarkdownParseronentProps {
   'data-tweet-id'?: string;
   'data-youtube-id'?: string;
   'data-youtube-title'?: string;
+  'data-tiktok-id'?: string;
+  'data-tiktok-username'?: string;
   url?: string;
   button_title?: string;
   [key: string]: unknown;
@@ -297,6 +366,10 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
     .replace(/<youtube id="(.*?)"(?: title="(.*?)")?.*?\/>/g, '<div data-youtube-id="$1" data-youtube-title="$2" class="youtube-embed"></div>')
     // Handle youtube tags with closing tags
     .replace(/<youtube id="(.*?)"(?: title="(.*?)")?.*?>(.*?)<\/youtube>/g, '<div data-youtube-id="$1" data-youtube-title="$2" class="youtube-embed">$3</div>')
+    // Process tiktok tags
+    .replace(/<tiktok id="(.*?)"(?: username="(.*?)")?.*?\/>/g, '<div data-tiktok-id="$1" data-tiktok-username="$2" class="tiktok-embed"></div>')
+    // Handle tiktok tags with closing tags
+    .replace(/<tiktok id="(.*?)"(?: username="(.*?)")?.*?>(.*?)<\/tiktok>/g, '<div data-tiktok-id="$1" data-tiktok-username="$2" class="tiktok-embed">$3</div>')
     // Process ==highlight== syntax to convert to custom highlight spans
     .replace(/==([^=]+?)==/g, '<span class="highlighted">$1</span>');
 
@@ -420,6 +493,14 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
         />;
       }
 
+      // Handle TikTok embeds
+      if (className === 'tiktok-embed' && props['data-tiktok-id']) {
+        return <TikTokEmbed
+          id={props['data-tiktok-id'] as string}
+          username={props['data-tiktok-username'] as string | undefined}
+        />;
+      }
+
       // Default div rendering
       return <div className={className} {...props}>{children}</div>;
     },
@@ -446,6 +527,10 @@ const MarkdownParser = ({ content = "" }: MarkdownParserProps) => {
     youtube: ({ id, title }: MarkdownParseronentProps) => {
       if (typeof id !== 'string') return null;
       return <YoutubeEmbed id={id} title={title as string | undefined} />;
+    },
+    tiktok: ({ id, username }: MarkdownParseronentProps) => {
+      if (typeof id !== 'string') return null;
+      return <TikTokEmbed id={id} username={username as string | undefined} />;
     },
     table: ({ children, ...props }: MarkdownParseronentProps) => {
       return <div><table {...props}>{children}</table></div>;

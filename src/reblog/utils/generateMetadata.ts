@@ -24,14 +24,15 @@ export async function generateArticleMetadata(post: ArticleDetails | null, notFo
   }
 
   // Build language alternates dynamically from alt_langs
-  const languageAlternates: Record<string, string> = {
-    'x-default': `${site_metadata.site_url}${post.handle}`
-  };
+  const languageAlternates: Record<string, string> = {};
 
   // Process alt_langs array if it exists
   if (post.alt_langs && Array.isArray(post.alt_langs)) {
     post.alt_langs.forEach((altLang: { lang: string; handle: string }) => {
-      if (altLang.lang && altLang.handle) {
+      if (altLang.lang && altLang.handle && altLang.status === 'published' && altLang.main === true) {
+        languageAlternates['x-default'] = `${site_metadata.site_url}${post.handle}`;
+        languageAlternates[altLang.lang.toLowerCase()] = `${site_metadata.site_url}${altLang.handle}`;
+      } else if (altLang.lang && altLang.handle && altLang.status === 'published') {
         languageAlternates[altLang.lang.toLowerCase()] = `${site_metadata.site_url}${altLang.handle}`;
       }
     });
